@@ -202,6 +202,8 @@ export default {
     }
     var touchStart = null
     var needStop = null
+    //是否在横向开启的滑动
+    var startMoveOnXaxis=null
     this.__handleTouchMove = function (event) {
       var x = event.touches[0].pageX
       var y = event.touches[0].pageY
@@ -209,6 +211,8 @@ export default {
       if (needStop === null) {
         if (Math.abs(x - touchStart.x) > Math.abs(y - touchStart.y)) {
           // 横向滑动
+          在横向开启的滑动
+          startMoveOnXaxis=!0
           if (self.scrollX) {
             if (main.scrollLeft === 0 && x > touchStart.x) {
               needStop = false
@@ -240,8 +244,8 @@ export default {
       if (needStop) {
         event.stopPropagation()
       }
-
-      if (self.refresherEnabled && self.refreshState === 'pulling') {
+      //在横向开启的滑动下无法再进行下拉操作
+      if (!startMoveOnXaxis&&self.refresherEnabled && self.refreshState === 'pulling') {
         const dy = y - touchStart.y
         self.refresherHeight = dy
 
@@ -265,6 +269,8 @@ export default {
           disable: true
         })
         needStop = null
+        //初始化是否在横向开启的滑动
+        startMoveOnXaxis=null
         touchStart = {
           x: event.touches[0].pageX,
           y: event.touches[0].pageY
